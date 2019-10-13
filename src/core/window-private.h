@@ -550,6 +550,9 @@ struct _MetaWindow
   } placement;
 
   guint unmanage_idle_id;
+
+  /* Prevent blinking when focusing */
+  gboolean focusing;
 };
 
 struct _MetaWindowClass
