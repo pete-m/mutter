@@ -4,6 +4,7 @@ stages:
  - review
  - build
  - test
+ - analysis
 
 check-commit-log:
   stage: review
@@ -77,3 +78,20 @@ can-build-gnome-shell:
   only:
     - merge_requests
     - /^.*$/
+
+coverity:
+  stage: analysis
+  allow_failure: true
+  script:
+    - dnf install -y clang
+    - curl https://scan.coverity.com/download/linux64 --data "token=$COVERITY_TOKEN&project=mutter" --output /tmp/coverity_tool.tgz
+    - tar zxf /tmp/coverity_tool.tgz
+    - CC=clang meson coverity-build
+    - ./cov-analysis-linux64-*/bin/cov-build --dir cov-int ninja -C coverity-build
+    - tar czf cov-int.tar.gz cov-int
+    - curl https://scan.coverity.com/builds?project=mutter
+      --form token=$COVERITY_TOKEN --form email=carlosg@gnome.org
+      --form file=@cov-int.tar.gz --form version="`git describe --tags`"
+      --form description="gitlab CI build"
+  only:
+    - master
