@@ -434,6 +434,9 @@ mapping_helper_apply (MappingHelper   *helper,
       MetaMonitor *monitor;
 
       info = &g_array_index (helper->device_maps, DeviceCandidates, i);
+      g_debug ("Applying mapping %d to input device '%s', capabilities %x", i,
+               clutter_input_device_get_device_name (info->input->device),
+               mapper_input_info_get_caps (info->input));
 
       for (j = 0; j < info->matches->len; j++)
         {
@@ -441,6 +444,10 @@ mapping_helper_apply (MappingHelper   *helper,
           DeviceMatch *match;
 
           match = &g_array_index (info->matches, DeviceMatch, j);
+          g_debug ("Output candidate '%s', score %x",
+                   meta_monitor_get_display_name (match->monitor),
+                   match->score);
+
           monitor = match->monitor;
           logical_monitor = meta_monitor_get_logical_monitor (monitor);
           output = g_hash_table_lookup (mapper->output_devices,
@@ -452,6 +459,9 @@ mapping_helper_apply (MappingHelper   *helper,
           if (output->attached_caps & mapper_input_info_get_caps (info->input))
             continue;
 
+          g_debug ("Matched input '%s' with output '%s'",
+                   clutter_input_device_get_device_name (info->input->device),
+                   meta_monitor_get_display_name (match->monitor));
           mapper_output_info_add_input (output, info->input, monitor);
           break;
         }
