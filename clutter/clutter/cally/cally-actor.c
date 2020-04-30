@@ -767,10 +767,10 @@ static gboolean
 cally_actor_action_do_action (AtkAction *action,
                              gint       index)
 {
-  CallyActor           *cally_actor = NULL;
-  AtkStateSet          *set         = NULL;
-  CallyActorPrivate    *priv        = NULL;
-  CallyActorActionInfo *info        = NULL;
+  CallyActor              *cally_actor = NULL;
+  g_autoptr (AtkStateSet)  set         = NULL;
+  CallyActorPrivate       *priv        = NULL;
+  CallyActorActionInfo    *info        = NULL;
 
   cally_actor = CALLY_ACTOR (action);
   priv = cally_actor->priv;
@@ -783,8 +783,6 @@ cally_actor_action_do_action (AtkAction *action,
   if (!atk_state_set_contains_state (set, ATK_STATE_SENSITIVE) ||
       !atk_state_set_contains_state (set, ATK_STATE_SHOWING))
     return FALSE;
-
-  g_object_unref (set);
 
   info = _cally_actor_get_action_info (cally_actor, index);
 
